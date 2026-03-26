@@ -28,7 +28,7 @@ export async function POST(
 ) {
   try {
     const { id } = await context.params;
-    const { title, body, author_name } = await request.json();
+    const { title, body, author_name, image_url } = await request.json();
 
     if (!title || !body) {
       return NextResponse.json(
@@ -38,8 +38,8 @@ export async function POST(
     }
 
     const result = await pool.query(
-      'INSERT INTO posts (channel_id, title, body, author_name) VALUES ($1, $2, $3, $4) RETURNING *',
-      [id, title, body, author_name || 'Anonymous']
+      'INSERT INTO posts (channel_id, title, body, author_name, image_url) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [id, title, body, author_name || 'Anonymous', image_url || null]
     );
     return NextResponse.json(result.rows[0], { status: 201 });
   } catch (error) {

@@ -49,6 +49,15 @@ export default async function PostPage({
             Posted by {post.author_name} · {new Date(post.created_at).toLocaleDateString()}
           </div>
           <p className="text-gray-300 leading-relaxed">{post.body}</p>
+          {post.image_url && (
+            <div className="mt-4">
+              <img
+                src={post.image_url}
+                alt="Post screenshot"
+                className="max-w-full rounded border border-gray-700"
+              />
+          </div>
+        )}
         </div>
       </div>
 

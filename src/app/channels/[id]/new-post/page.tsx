@@ -12,29 +12,85 @@ export default function NewPost() {
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [authorName, setAuthorName] = useState('');
+  const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const selected = e.target.files?.[0];
+    if (!selected) return;
+
+    // Client-side validation
+    const allowed = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
+    if (!allowed.includes(selected.type)) {
+      setError('Only PNG, JPEG, and WebP images are allowed');
+      return;
+    }
+    if (selected.size > 5 * 1024 * 1024) {
+      setError('File size must be under 5MB');
+      return;
+    }
+
+    setError('');
+    setFile(selected);
+    setPreview(URL.createObjectURL(selected));
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError('');
     setLoading(true);
 
-    const res = await fetch(`/api/channels/${channelId}/posts`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title, body, author_name: authorName }),
-    });
+    try {
+      let imageUrl = null;
 
-    const data = await res.json();
+      // Upload image first if one was selected
+      if (file) {
+        const formData = new FormData();
+        formData.append('file', file);
 
-    if (!res.ok) {
-      setError(data.error || 'Something went wrong');
+        const uploadRes = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        const uploadData = await uploadRes.json();
+
+        if (!uploadRes.ok) {
+          setError(uploadData.error || 'Upload failed');
+          setLoading(false);
+          return;
+        }
+
+        imageUrl = uploadData.url;
+      }
+
+      // Create the post
+      const res = await fetch(`/api/channels/${channelId}/posts`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title,
+          body,
+          author_name: authorName,
+          image_url: imageUrl,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || 'Something went wrong');
+        setLoading(false);
+        return;
+      }
+
+      router.push(`/channels/${channelId}`);
+    } catch (err) {
+      setError('Something went wrong');
       setLoading(false);
-      return;
     }
-
-    router.push(`/channels/${channelId}`);
   }
 
   return (
@@ -87,6 +143,38 @@ export default function NewPost() {
             className="w-full bg-[#0f0f0f] border border-gray-700 rounded px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-purple-500 resize-none"
             required
           />
+        </div>
+
+        {/* Screenshot upload */}
+        <div>
+          <label className="block text-sm font-medium text-gray-400 mb-1">
+            Screenshot (optional)
+          </label>
+          <input
+            type="file"
+            accept="image/png,image/jpeg,image/jpg,image/webp"
+            onChange={handleFileChange}
+            className="w-full text-sm text-gray-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-sm file:bg-purple-600 file:text-white hover:file:bg-purple-700 file:cursor-pointer"
+          />
+          <p className="text-gray-600 text-xs mt-1">PNG, JPEG, WebP — max 5MB</p>
+
+          {/* Image preview */}
+          {preview && (
+            <div className="mt-3">
+              <img
+                src={preview}
+                alt="Preview"
+                className="max-h-48 rounded border border-gray-700 object-contain"
+              />
+              <button
+                type="button"
+                onClick={() => { setFile(null); setPreview(null); }}
+                className="text-red-400 text-xs mt-1 hover:text-red-300"
+              >
+                Remove image
+              </button>
+            </div>
+          )}
         </div>
 
         {error && (
