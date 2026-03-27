@@ -1,36 +1,81 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# dev-forum
 
-## Getting Started
+A channel-based Q&A forum for programmers. Ask questions, share knowledge, and learn together.
 
-First, run the development server:
+## Tech Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Frontend/Backend:** Next.js 16 (App Router)
+- **Database:** PostgreSQL 16
+- **Containerization:** Docker + Docker Compose
+- **Styling:** Tailwind CSS
+
+## Running the App
+
+### Requirements
+- Docker Desktop
+
+### 1. Create your environment file
+cp .env.example .env.local
+
+### 2. Start the application
+docker-compose up --build
+
+### 3. Open the app
+Visit http://localhost:3000
+
+Docker will automatically:
+- Start the PostgreSQL database on port 5432
+- Run the schema migrations
+- Load the seed data
+- Start the Next.js app on port 3000
+
+## Ports
+
+| Service | Port |
+|---------|------|
+| Next.js App | 3000 |
+| PostgreSQL | 5432 |
+
+## Admin Credentials
+
+No admin account required for Part 1. Authentication is added in Part 2.
+
+## Database Setup
+
+Schema and seed data are applied automatically on startup via `docker-entrypoint.sh`.
+
+To run manually:
+```
+docker exec -i devforum-db psql -U postgres -d devforum < src/db/schema.sql
+docker exec -i devforum-db psql -U postgres -d devforum < src/db/seed.sql
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Seed Data
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The database comes pre-loaded with:
+- 3 channels (javascript, python, general)
+- 3 posts with realistic questions
+- 2 replies
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Project Structure
+```
+src/
+  app/           # Next.js pages and API routes
+    api/         # Backend API endpoints
+    channels/    # Channel and post UI pages
+  db/            # SQL schema and seed files
+  lib/           # Database connection
+public/
+  uploads/       # Uploaded screenshots
+```
 
-## Learn More
+## API Endpoints
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | /api/channels | Get all channels |
+| POST | /api/channels | Create a channel |
+| GET | /api/channels/:id/posts | Get posts in a channel |
+| POST | /api/channels/:id/posts | Create a post |
+| POST | /api/channels/:id/posts/:postId/replies | Create a reply |
+| POST | /api/upload | Upload a screenshot |
