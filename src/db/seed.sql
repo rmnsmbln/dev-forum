@@ -20,5 +20,5 @@ ON CONFLICT DO NOTHING;
 
 -- Admin user (password: admin123)
 INSERT INTO users (display_name, email, password_hash, role) VALUES
-  ('Admin', 'admin@devforum.com', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin')
+  ('Admin', 'admin@devforum.com', '$2b$10$PZ3Qoyy8sAVPtnb1iilvHu5QC.MLzGoF9v6/y/VkZI2liiqUACMOO', 'admin')
 ON CONFLICT (email) DO NOTHING;
