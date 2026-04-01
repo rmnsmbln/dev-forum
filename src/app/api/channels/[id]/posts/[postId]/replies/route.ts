@@ -19,7 +19,7 @@ export async function POST(
     }
 
     const { postId } = await context.params;
-    const { body } = await request.json();
+    const { body, parent_reply_id } = await request.json();
 
     if (!body) {
       return NextResponse.json(
@@ -29,8 +29,8 @@ export async function POST(
     }
 
     const result = await pool.query(
-      'INSERT INTO replies (post_id, body, author_name, author_id) VALUES ($1, $2, $3, $4) RETURNING *',
-      [postId, body, session.user.displayName, session.user.id]
+      'INSERT INTO replies (post_id, body, author_name, author_id, parent_reply_id) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [postId, body, session.user.displayName, session.user.id, parent_reply_id || null]
     );
 
     return NextResponse.json(result.rows[0], { status: 201 });

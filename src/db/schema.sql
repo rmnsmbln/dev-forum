@@ -48,3 +48,25 @@ CREATE TABLE IF NOT EXISTS attachments (
   file_path TEXT NOT NULL,
   created_at TIMESTAMP DEFAULT NOW()
 );
+
+-- Replies
+CREATE TABLE IF NOT EXISTS replies (
+  id SERIAL PRIMARY KEY,
+  post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE,
+  parent_reply_id INTEGER REFERENCES replies(id) ON DELETE CASCADE,
+  author_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+  body TEXT NOT NULL,
+  author_name VARCHAR(100) DEFAULT 'Anonymous',
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Votes
+CREATE TABLE IF NOT EXISTS votes (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  target_type VARCHAR(10) NOT NULL,
+  target_id INTEGER NOT NULL,
+  value INTEGER NOT NULL CHECK (value IN (1, -1)),
+  created_at TIMESTAMP DEFAULT NOW(),
+  UNIQUE(user_id, target_type, target_id)
+);
