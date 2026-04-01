@@ -1,9 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { writeFile } from 'fs/promises';
 import path from 'path';
+import { getIronSession } from 'iron-session';
+import { sessionOptions, SessionData } from '@/lib/session';
 
 const ALLOWED_TYPES = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+const res = new NextResponse();
+const session = await getIronSession<SessionData>(request, res, sessionOptions);
+
+if (!session.user) {
+  return NextResponse.json(
+    { error: 'You must be logged in to upload files' },
+    { status: 401 }
+  );
+}
 
 export async function POST(request: NextRequest) {
   try {

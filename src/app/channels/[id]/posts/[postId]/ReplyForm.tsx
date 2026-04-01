@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function ReplyForm({
   postId,
@@ -12,9 +13,19 @@ export default function ReplyForm({
 }) {
   const router = useRouter();
   const [body, setBody] = useState('');
-  const [authorName, setAuthorName] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const [checking, setChecking] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/auth/me')
+      .then(res => res.json())
+      .then(data => {
+        setUser(data.user);
+        setChecking(false);
+      });
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -26,7 +37,7 @@ export default function ReplyForm({
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ body, author_name: authorName }),
+        body: JSON.stringify({ body }),
       }
     );
 
@@ -39,21 +50,31 @@ export default function ReplyForm({
     }
 
     setBody('');
-    setAuthorName('');
     setLoading(false);
     router.refresh();
+  }
+
+  if (checking) return null;
+
+  if (!user) {
+    return (
+      <div className="border border-gray-800 rounded-lg p-4 text-center">
+        <p className="text-gray-500 text-sm mb-3">
+          You must be signed in to reply
+        </p>
+        <Link
+          href="/auth/signin"
+          className="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-full text-sm font-medium transition"
+        >
+          Sign in to reply
+        </Link>
+      </div>
+    );
   }
 
   return (
     <form onSubmit={handleSubmit}>
       <h3 className="text-white font-medium mb-3">Leave a Reply</h3>
-      <input
-        type="text"
-        value={authorName}
-        onChange={(e) => setAuthorName(e.target.value)}
-        placeholder="Your name (optional)"
-        className="w-full bg-[#0f0f0f] border border-gray-700 rounded px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-purple-500 mb-3"
-      />
       <textarea
         value={body}
         onChange={(e) => setBody(e.target.value)}

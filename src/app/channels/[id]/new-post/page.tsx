@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 
@@ -11,17 +11,25 @@ export default function NewPost() {
 
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
-  const [authorName, setAuthorName] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    fetch('/api/auth/me')
+      .then(res => res.json())
+      .then(data => {
+        if (!data.user) {
+          router.push('/auth/signin');
+        }
+      });
+  }, []);
+
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const selected = e.target.files?.[0];
     if (!selected) return;
 
-    // Client-side validation
     const allowed = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
     if (!allowed.includes(selected.type)) {
       setError('Only PNG, JPEG, and WebP images are allowed');
@@ -45,7 +53,6 @@ export default function NewPost() {
     try {
       let imageUrl = null;
 
-      // Upload image first if one was selected
       if (file) {
         const formData = new FormData();
         formData.append('file', file);
@@ -66,14 +73,12 @@ export default function NewPost() {
         imageUrl = uploadData.url;
       }
 
-      // Create the post
       const res = await fetch(`/api/channels/${channelId}/posts`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title,
           body,
-          author_name: authorName,
           image_url: imageUrl,
         }),
       });
@@ -106,19 +111,6 @@ export default function NewPost() {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-gray-400 mb-1">
-            Your Name
-          </label>
-          <input
-            type="text"
-            value={authorName}
-            onChange={(e) => setAuthorName(e.target.value)}
-            placeholder="e.g. DevRam"
-            className="w-full bg-[#0f0f0f] border border-gray-700 rounded px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-purple-500"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-400 mb-1">
             Title
           </label>
           <input
@@ -145,7 +137,6 @@ export default function NewPost() {
           />
         </div>
 
-        {/* Screenshot upload */}
         <div>
           <label className="block text-sm font-medium text-gray-400 mb-1">
             Screenshot (optional)
@@ -158,7 +149,6 @@ export default function NewPost() {
           />
           <p className="text-gray-600 text-xs mt-1">PNG, JPEG, WebP — max 5MB</p>
 
-          {/* Image preview */}
           {preview && (
             <div className="mt-3">
               <img
