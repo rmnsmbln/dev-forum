@@ -23,7 +23,7 @@ export async function POST(request: Request) {
 
     if (!name) {
       return NextResponse.json(
-        { error: 'Channel name is required' },
+        { error: 'Channel name is required!' },
         { status: 400 }
       );
     }

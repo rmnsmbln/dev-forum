@@ -38,7 +38,10 @@ Docker will automatically:
 
 ## Admin Credentials
 
-No admin account required for Part 1. Authentication is added in Part 2.
+| Field | Value |
+|-------|-------|
+| Email | admin@devforum.com |
+| Password | admin123 |
 
 ## Database Setup
 

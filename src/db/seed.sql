@@ -17,3 +17,8 @@ INSERT INTO replies (post_id, body, author_name) VALUES
   (1, 'Think of "await" as a pause button. It tells the code to wait until the promise is finished before moving to the next line.', 'TechLead_67'),
   (2, 'Just stick to "const" by default. Use "let" only if you know the value will change. You can pretty much ignore "var" now.', 'DevMaster')
 ON CONFLICT DO NOTHING;
+
+-- Admin user (password: admin123)
+INSERT INTO users (display_name, email, password_hash, role) VALUES
+  ('Admin', 'admin@devforum.com', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin')
+ON CONFLICT (email) DO NOTHING;
