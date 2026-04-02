@@ -23,9 +23,12 @@ export default async function RootLayout({
     <html lang="en">
       <body className="min-h-screen bg-[#0f0f0f] text-gray-200">
         <nav className="bg-[#1a1a1b] border-b border-gray-800 px-6 py-3 flex items-center justify-between sticky top-0 z-10">
-          <a href="/" className="text-purple-400 font-bold text-xl tracking-tight">
-            dev-forum
-          </a>
+        <a href="/" className="text-purple-400 font-bold text-xl tracking-tight">
+          dev-forum
+        </a>
+        <a href="/search" className="text-gray-400 hover:text-white text-sm transition">
+          Search
+        </a>
           <NavAuth user={user} />
         </nav>
         <div className="max-w-5xl mx-auto px-4 py-6 flex gap-6">
