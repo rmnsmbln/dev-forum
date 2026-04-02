@@ -46,7 +46,7 @@ export default function NavAuth({ user }: { user: User | null }) {
       {user.role === 'admin' && (
         <Link
           href="/admin"
-          className="text-gray-400 hover:text-white text-sm transition"
+          className="text-red-400 hover:text-red-300 text-sm transition"
         >
           Dashboard
         </Link>

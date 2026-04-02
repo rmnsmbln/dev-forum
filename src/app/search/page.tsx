@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
 interface Result {
@@ -28,6 +29,7 @@ const SEARCH_TYPES = [
 const NO_QUERY_TYPES = ['most_posts', 'least_posts', 'top_rated', 'low_rated'];
 
 export default function SearchPage() {
+  const searchParams = useSearchParams();
   const [query, setQuery] = useState('');
   const [type, setType] = useState('content');
   const [results, setResults] = useState<Result[]>([]);
@@ -35,6 +37,14 @@ export default function SearchPage() {
   const [searched, setSearched] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
+
+  useEffect(() => {
+    const q = searchParams.get('q');
+    if (q) {
+      setQuery(q);
+      doSearch('content', q, 1);
+    }
+  }, []);
 
   async function doSearch(searchType: string, searchQuery: string, newPage = 1) {
     setLoading(true);
@@ -82,8 +92,12 @@ export default function SearchPage() {
   const noQuery = NO_QUERY_TYPES.includes(type);
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-white mb-6">Search</h1>
+    <div className="max-w-2xl mx-auto">
+      <h1 className="text-2xl font-bold text-white mb-2 text-center">Search</h1>
+      <p className="text-gray-500 text-sm text-center mb-6">
+        Search across posts, replies and users
+      </p>
+      <hr className="border-gray-800 mb-6" />
 
       <form onSubmit={handleSearch} className="bg-[#1a1a1b] border border-gray-800 rounded-lg p-4 mb-6">
         <div className="flex gap-3">

@@ -22,15 +22,36 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen bg-[#0f0f0f] text-gray-200">
-        <nav className="bg-[#1a1a1b] border-b border-gray-800 px-6 py-3 flex items-center justify-between sticky top-0 z-10">
-        <a href="/" className="text-purple-400 font-bold text-xl tracking-tight">
-          dev-forum
-        </a>
-        <a href="/search" className="text-gray-400 hover:text-white text-sm transition">
-          Search
-        </a>
-          <NavAuth user={user} />
-        </nav>
+      <nav className="bg-[#1a1a1b] border-b border-gray-800 px-6 py-3 flex items-center gap-4 sticky top-0 z-10">
+      {/* Logo */}
+      <a href="/" className="text-purple-400 font-bold text-xl tracking-tight shrink-0">
+        dev-forum
+      </a>
+
+      {/* Search bar */}
+      <form action="/search" className="flex-1 max-w-xl">
+        <div className="relative">
+          <input
+            type="text"
+            name="q"
+            placeholder="Search dev-forum..."
+            className="w-full bg-[#0f0f0f] border border-gray-700 hover:border-purple-500 focus:border-purple-500 rounded-full px-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none transition"
+          />
+          <button
+            type="submit"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-purple-400 transition"
+          >
+            🔍
+          </button>
+        </div>
+      </form>
+
+      {/* Auth - pushed to right */}
+      <div className="ml-auto shrink-0">
+        <NavAuth user={user} />
+      </div>
+    </nav>
+
         <div className="max-w-5xl mx-auto px-4 py-6 flex gap-6">
           <main className="flex-1 min-w-0">
             {children}

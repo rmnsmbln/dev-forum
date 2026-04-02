@@ -60,6 +60,9 @@ CREATE TABLE IF NOT EXISTS replies (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
+-- Add parent_reply_id if it doesn't exist (migration)
+ALTER TABLE replies ADD COLUMN IF NOT EXISTS parent_reply_id INTEGER REFERENCES replies(id) ON DELETE CASCADE;
+
 -- Votes
 CREATE TABLE IF NOT EXISTS votes (
   id SERIAL PRIMARY KEY,
