@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
     await writeFile(filepath, buffer);
 
     return NextResponse.json({
-      url: `/uploads/${filename}`,
+      url: `/api/uploads/${filename}`,
     });
   } catch (error) {
     return NextResponse.json(

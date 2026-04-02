@@ -48,7 +48,7 @@ export default function NavAuth({ user }: { user: User | null }) {
           href="/admin"
           className="text-gray-400 hover:text-white text-sm transition"
         >
-          Admin
+          Dashboard
         </Link>
       )}
       <button

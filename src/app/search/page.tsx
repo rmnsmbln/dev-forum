@@ -25,6 +25,8 @@ const SEARCH_TYPES = [
   { value: 'low_rated', label: 'Lowest rated posts' },
 ];
 
+const NO_QUERY_TYPES = ['most_posts', 'least_posts', 'top_rated', 'low_rated'];
+
 export default function SearchPage() {
   const [query, setQuery] = useState('');
   const [type, setType] = useState('content');
@@ -34,13 +36,11 @@ export default function SearchPage() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
 
-  async function handleSearch(e?: React.FormEvent, newPage = 1) {
-    if (e) e.preventDefault();
+  async function doSearch(searchType: string, searchQuery: string, newPage = 1) {
     setLoading(true);
-
     const params = new URLSearchParams({
-      type,
-      q: query,
+      type: searchType,
+      q: searchQuery,
       page: newPage.toString(),
     });
 
@@ -59,21 +59,37 @@ export default function SearchPage() {
     setLoading(false);
   }
 
-  async function loadMore() {
-    await handleSearch(undefined, page + 1);
+  async function handleSearch(e?: React.FormEvent) {
+    if (e) e.preventDefault();
+    await doSearch(type, query, 1);
   }
 
-  const noQuery = ['most_posts', 'least_posts', 'top_rated', 'low_rated'].includes(type);
+  async function handleTypeChange(newType: string) {
+    setType(newType);
+    setSearched(false);
+    setResults([]);
+    setQuery('');
+
+    if (NO_QUERY_TYPES.includes(newType)) {
+      await doSearch(newType, '', 1);
+    }
+  }
+
+  async function loadMore() {
+    await doSearch(type, query, page + 1);
+  }
+
+  const noQuery = NO_QUERY_TYPES.includes(type);
 
   return (
     <div>
       <h1 className="text-2xl font-bold text-white mb-6">Search</h1>
 
       <form onSubmit={handleSearch} className="bg-[#1a1a1b] border border-gray-800 rounded-lg p-4 mb-6">
-        <div className="flex gap-3 mb-3">
+        <div className="flex gap-3">
           <select
             value={type}
-            onChange={(e) => { setType(e.target.value); setSearched(false); setResults([]); }}
+            onChange={(e) => handleTypeChange(e.target.value)}
             className="bg-[#0f0f0f] border border-gray-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500"
           >
             {SEARCH_TYPES.map(t => (
@@ -91,13 +107,19 @@ export default function SearchPage() {
             />
           )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-full text-sm font-medium transition disabled:opacity-50"
-          >
-            {loading ? 'Searching...' : 'Search'}
-          </button>
+          {!noQuery && (
+            <button
+              type="submit"
+              disabled={loading}
+              className="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-full text-sm font-medium transition disabled:opacity-50"
+            >
+              {loading ? 'Searching...' : 'Search'}
+            </button>
+          )}
+
+          {noQuery && loading && (
+            <span className="text-gray-400 text-sm py-2">Loading...</span>
+          )}
         </div>
       </form>
 

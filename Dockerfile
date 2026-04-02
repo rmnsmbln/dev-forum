@@ -22,6 +22,8 @@ COPY src/db/schema.sql ./src/db/schema.sql
 COPY src/db/seed.sql ./src/db/seed.sql
 COPY docker-entrypoint.sh ./docker-entrypoint.sh
 
+RUN mkdir -p /app/public/uploads
+
 EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
