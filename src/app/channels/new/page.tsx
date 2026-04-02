@@ -44,12 +44,18 @@ export default function NewChannel() {
   }
 
   return (
-    <main className="max-w-xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">Create a Channel</h1>
+    <div className="bg-[#1a1a1b] border border-gray-800 rounded-lg p-6 max-w-xl">
+      <div className="flex items-center gap-2 mb-6">
+        <Link href="/" className="text-gray-500 hover:text-gray-300 text-sm">
+          Back
+        </Link>
+        <span className="text-gray-700">/</span>
+        <h1 className="text-white font-bold">Create a Channel</h1>
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium mb-1">
+          <label className="block text-sm font-medium text-gray-400 mb-1">
             Channel Name
           </label>
           <input
@@ -57,13 +63,13 @@ export default function NewChannel() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="e.g. javascript"
-            className="w-full border rounded px-3 py-2 text-sm"
+            className="w-full bg-[#0f0f0f] border border-gray-700 rounded px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-purple-500"
             required
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">
+          <label className="block text-sm font-medium text-gray-400 mb-1">
             Description (optional)
           </label>
           <input
@@ -71,22 +77,30 @@ export default function NewChannel() {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="What is this channel about?"
-            className="w-full border rounded px-3 py-2 text-sm"
+            className="w-full bg-[#0f0f0f] border border-gray-700 rounded px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-purple-500"
           />
         </div>
 
         {error && (
-          <p className="text-red-500 text-sm">{error}</p>
+          <p className="text-red-400 text-sm">{error}</p>
         )}
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm disabled:opacity-50"
-        >
-          {loading ? 'Creating...' : 'Create Channel'}
-        </button>
+        <div className="flex gap-3 pt-2">
+          <button
+            type="submit"
+            disabled={loading}
+            className="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-full text-sm font-medium transition disabled:opacity-50"
+          >
+            {loading ? 'Creating...' : 'Create Channel'}
+          </button>
+          <Link
+            href="/"
+            className="text-gray-400 hover:text-white px-5 py-2 rounded-full text-sm font-medium transition border border-gray-700 hover:border-gray-500"
+          >
+            Cancel
+          </Link>
+        </div>
       </form>
-    </main>
+    </div>
   );
 }

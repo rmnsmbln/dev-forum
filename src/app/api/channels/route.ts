@@ -1,7 +1,8 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import pool from '@/lib/db';
+import { getIronSession } from 'iron-session';
+import { sessionOptions, SessionData } from '@/lib/session';
 
-// GET /api/channels - fetch all channels
 export async function GET() {
   try {
     const result = await pool.query(
@@ -16,14 +17,23 @@ export async function GET() {
   }
 }
 
-// POST /api/channels - create a new channel
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    const res = new NextResponse();
+    const session = await getIronSession<SessionData>(request, res, sessionOptions);
+
+    if (!session.user) {
+      return NextResponse.json(
+        { error: 'You must be logged in to create a channel' },
+        { status: 401 }
+      );
+    }
+
     const { name, description } = await request.json();
 
     if (!name) {
       return NextResponse.json(
-        { error: 'Channel name is required!' },
+        { error: 'Channel name is required' },
         { status: 400 }
       );
     }
