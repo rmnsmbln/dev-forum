@@ -123,3 +123,7 @@ public/
 | DELETE | /api/admin/channels | Delete a channel | Admin |
 | DELETE | /api/admin/posts | Delete a post | Admin |
 | DELETE | /api/admin/replies | Delete a reply | Admin |
+
+## Demo Video
+
+[Watch the demo] https://drive.google.com/file/d/1b6rev0l43VXHnI5JcwS_EAIblW8iz8CS/view?usp=sharing
